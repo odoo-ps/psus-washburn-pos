@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="portal_layout" name="Portal layout: product_status menu entry" inherit_id="portal.portal_breadcrumbs" priority="35">
+        <xpath expr="//ol[hasclass('o_portal_submenu')]" position="inside">
+            <li t-if="page_name == 'product_status' or product_status" t-attf-class="breadcrumb-item #{'active' if not product_status else ''}">
+                <t>Products</t>
+            </li>
+        </xpath>
+    </template>
+
+    <template id="portal_my_home_product_status" name="Show Product Status" customize_show="True" inherit_id="portal.portal_my_home" priority="45">
+        <xpath expr="//div[hasclass('o_portal_docs')]" position="inside">
+            <t t-call="portal.portal_docs_entry">
+                <t t-set="title">Products</t>
+                <t t-set="url" t-value="'/my/product_status'"/>
+                <t t-set="placeholder_count" t-value="'product_status_count'"/>
+            </t>
+        </xpath>
+    </template>
+
+    <template id="portal_my_product_status" name="My Products Status">
+        <t t-call="portal.portal_layout">
+            <t t-set="breadcrumbs_searchbar" t-value="True"/>
+
+            <t t-call="portal.portal_searchbar">
+                <t t-set="title">Products</t>
+            </t>
+            <t t-if="not grouped_product_status">
+                <div class="alert alert-warning mt8" role="alert">
+                    There are no product status.
+                </div>
+            </t>
+            <t t-if="grouped_product_status">
+                <t t-call="portal.portal_table">
+                    <t t-foreach="grouped_product_status" t-as="grouped_lot">
+                        <t t-set="product_status" t-value="grouped_lot[0]"/>
+                        <thead style="font-size: 0.8rem">
+                            <tr t-if="not groupby =='none'" t-attf-class="{{'thead-light'}}">
+                                <t t-if="groupby == 'owner'">
+                                    <th t-if="groupby == 'owner'" colspan="8">
+                                        <em class="font-weight-normal text-muted">Status for owner:</em>
+                                        <span t-field="grouped_lot[0][0].partner_id.name"/>
+                                    </th>
+                                </t>
+                                <t t-if="groupby == 'product'">
+                                    <th t-if="groupby == 'product'" colspan="8">
+                                        <em class="font-weight-normal text-muted">Status for product:</em>
+                                        <span t-field="grouped_lot[0][0].product_id.name"/>
+                                    </th>
+                                </t>
+                                <t t-if="groupby == 'condition'">
+                                    <th t-if="groupby == 'condition'" colspan="8">
+                                        <em class="font-weight-normal text-muted">Status for condition:</em>
+                                        <span t-field="grouped_lot[0][0].condition_id.name"/>
+                                    </th>
+                                </t>
+                            </tr>
+                            <tr>
+                                <th>Product</th>
+                                <th>Location</th>
+                                <th>Serial #</th>
+                                <th>Owner</th>
+                                <th>Boxed tracking #</th>
+                                <th>Customer part #</th>
+                                <th>Condition</th>
+                                <th>Qty.</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 0.8rem">
+                            <t t-foreach="product_status" t-as="lot">
+                                <tr>
+                                    <td >
+                                        <span t-field="lot.product_id.display_name"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.current_location_id.name"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.name"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.partner_id.name"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.boxed_tracking_number"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.customer_part_number"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.condition_id.name"/>
+                                    </td>
+                                    <td >
+                                        <span t-field="lot.product_qty"/>
+                                    </td>
+                                </tr>
+                            </t>
+                        </tbody>
+                    </t>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
