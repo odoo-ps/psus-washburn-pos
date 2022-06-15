@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from collections import OrderedDict
 
 from odoo import http, _
 from odoo.http import request
-from odoo.osv.expression import OR
+from odoo.osv.expression import OR, AND
 
 from odoo.addons.portal.controllers.portal import CustomerPortal, pager as portal_pager
 
@@ -25,6 +25,10 @@ class ProductStatusCustomerPortal(CustomerPortal):
             'product': {'input': 'product', 'label': _('Search in Product')},
             'serial': {'input': 'serial', 'label': _('Search in Serial')},
             'owner': {'input': 'owner', 'label': _('Search in Owner')},
+            'part': {'input': 'part', 'label': _('Search in Part Number')},
+            'condition': {'input': 'condition', 'label': _('Search in Condition')},
+            'box': {'input': 'box', 'label': _('Search in Box number')},
+            'location': {'input': 'location', 'label': _('Search in Location')},
         }
 
     def _get_searchbar_groupby(self):
@@ -43,6 +47,14 @@ class ProductStatusCustomerPortal(CustomerPortal):
             search_domain = OR([search_domain, [('name', 'ilike', search)]])
         if search_in in ('owner', 'all'):
             search_domain = OR([search_domain, [('partner_id', 'ilike', search)]])
+        if search_in in ('part', 'all'):
+            search_domain = OR([search_domain, [('customer_part_number', 'ilike', search)]])
+        if search_in in ('condition', 'all'):
+            search_domain = OR([search_domain, [('condition_id', 'ilike', search)]])
+        if search_in in ('box', 'all'):
+            search_domain = OR([search_domain, [('boxed_tracking_number', 'ilike', search)]])
+        if search_in in ('location', 'all'):
+            search_domain = OR([search_domain, [('current_location_id', 'ilike', search)]])
         return search_domain
 
     def _get_groupby_mapping(self):
@@ -51,6 +63,14 @@ class ProductStatusCustomerPortal(CustomerPortal):
             'product': 'product_id',
             'condition': 'condition_id',
         }
+
+    def _get_searchbar_filters(self):
+        res = {
+            'all': {'label': _('All'), 'domain': []},
+        }
+        for condition in request.env['stock.production.lot.condition'].sudo().search([]):
+            res[str(condition.id)] = {'label': condition.name, 'domain': [("condition_id", "=", condition.id)]}
+        return res
 
     @http.route(['/my/product_status', '/my/product_status/page/<int:page>'], type='http', auth="user", website=True)
     def portal_my_product_status(self, page=1, sortby=None, filterby=None, search=None, search_in='all', groupby='none', **kw):
@@ -65,8 +85,14 @@ class ProductStatusCustomerPortal(CustomerPortal):
 
         searchbar_groupby = self._get_searchbar_groupby()
 
+        searchbar_filters = self._get_searchbar_filters()
+
         if search and search_in:
             domain += self._get_search_domain(search_in, search)
+
+        if not filterby:
+            filterby = 'all'
+        domain = AND([domain, searchbar_filters[filterby]['domain']])
 
         product_status_count = Lots_sudo.search_count(domain)
         # pager
@@ -85,7 +111,8 @@ class ProductStatusCustomerPortal(CustomerPortal):
             product_status = Lots_sudo.search(domain, order=orderby, limit=_items_per_page, offset=pager['offset'])
             if field:
                 raw_grouped_product_status =  Lots_sudo.read_group(domain, [field, "ids:array_agg(id)"], [field])
-                grouped_product_status = [(Lots_sudo.browse(group["ids"]), False) for group in raw_grouped_product_status]
+                # hope it is cached (product_qty is not stored, so can't be fetched from read_group)
+                grouped_product_status = [(Lots_sudo.browse(group["ids"]), sum(Lots_sudo.browse(group["ids"]).mapped('product_qty'))) for group in raw_grouped_product_status]
 
                 return product_status, grouped_product_status
 
@@ -108,5 +135,7 @@ class ProductStatusCustomerPortal(CustomerPortal):
             'groupby': groupby,
             'searchbar_inputs': searchbar_inputs,
             'searchbar_groupby': searchbar_groupby,
+            'searchbar_filters': OrderedDict(sorted(searchbar_filters.items())),
+            'filterby': filterby,
         })
         return request.render("wcgh_website_lots.portal_my_product_status", values)

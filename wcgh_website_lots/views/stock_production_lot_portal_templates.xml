@@ -41,18 +41,24 @@
                                     <th t-if="groupby == 'owner'" colspan="8">
                                         <em class="font-weight-normal text-muted">Status for owner:</em>
                                         <span t-field="grouped_lot[0][0].partner_id.name"/>
+                                        <em class="font-weight-normal text-muted">Total:</em>
+                                        <span t-esc="grouped_lot[1]"/>
                                     </th>
                                 </t>
                                 <t t-if="groupby == 'product'">
                                     <th t-if="groupby == 'product'" colspan="8">
                                         <em class="font-weight-normal text-muted">Status for product:</em>
                                         <span t-field="grouped_lot[0][0].product_id.name"/>
+                                        <em class="font-weight-normal text-muted">Total:</em>
+                                        <span t-esc="grouped_lot[1]"/>
                                     </th>
                                 </t>
                                 <t t-if="groupby == 'condition'">
                                     <th t-if="groupby == 'condition'" colspan="8">
                                         <em class="font-weight-normal text-muted">Status for condition:</em>
                                         <span t-field="grouped_lot[0][0].condition_id.name"/>
+                                        <em class="font-weight-normal text-muted">Total:</em>
+                                        <span t-esc="grouped_lot[1]"/>
                                     </th>
                                 </t>
                             </tr>
