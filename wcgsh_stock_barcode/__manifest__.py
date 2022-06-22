@@ -15,8 +15,15 @@
     'data': [
         'views/res_partner_views.xml',
         'views/product_product_templates.xml',
+        'views/product_reports.xml',
         'views/project_task_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'wcgsh_stock_barcode/static/src/js/kanban_controller.js',
+            'wcgsh_stock_barcode/static/src/js/barcode_picking_model.js',
+        ],
+    },
     'installable': True,
     'application': False,
     'auto_install': False,
