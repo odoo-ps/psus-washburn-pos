@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='parent_id']" position="after">
                 <field name="product_part"/>
-                <field name="task_owner"/>
+                <field name="owner"/>
             </xpath>
         </field>
     </record>

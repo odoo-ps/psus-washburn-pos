@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_project_task_barcodes">
+        <t t-foreach="docs" t-as="task">
+            <t t-call="wcgsh_stock_barcode.report_task_label2x3">
+                <t t-set="product" t-value="task.product_part_id"/>
+            </t>
+        </t>
+    </template>
+</odoo>
