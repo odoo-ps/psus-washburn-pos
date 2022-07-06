@@ -6,50 +6,30 @@
                 <t t-call="web.basic_layout">
                     <div class="page">
                         <t t-call="web.html_container">
-                            <t t-set="index" t-value="0"/>
-                            <t t-set="lines" t-value="[]"/>
-                            <t t-foreach="picking.move_line_nosuggest_ids" t-as="mvl">
-                                <t t-set="a" t-value="lines.append(mvl)"/>
-                            </t>
-                            <t t-foreach="range(int(len(picking.move_line_nosuggest_ids)/21)+(len(picking.move_line_nosuggest_ids)%21 &gt; 0))" t-as="page">
-                                <div style="padding: 30mm 3mm;">
-                                    <table class="my-0 table table-sm table-borderless">
-                                        <t t-foreach="range(7)" t-as="row">
-                                            <tr>
-                                                <t t-foreach="range(3)" t-as="column">
-                                                    <t t-if="index &lt; len(lines)">
-                                                        <t t-set="mvl" t-value="lines[index]"/>
-                                                        <t t-call="wcgsh_stock_barcode.report_picking_label3x7">
-                                                            <t t-set="product" t-value="mvl.product_id"/>
-                                                            <t t-set="abbr" t-value="mvl.owner_id.abbreviation"/>
-                                                        </t>
-                                                    </t>
-                                                    <t t-set="index" t-value="index+1"/>
-                                                </t>
-                                            </tr>
-                                        </t>
-                                    </table>
-                                </div>
-                            </t>
-                        </t>
-                    </div>
-                </t>
-            </t>
-<!--             <t t-foreach="docs" t-as="picking">
-                <t t-call="web.basic_layout">
-                    <div class="page">
-                        <t t-call="web.html_container">
                             <t t-foreach="picking.move_line_nosuggest_ids" t-as="mvl">
                                 <t t-call="wcgsh_stock_barcode.report_picking_label3x7">
                                     <t t-set="product" t-value="mvl.product_id"/>
                                     <t t-set="abbr" t-value="mvl.owner_id.abbreviation"/>
+                                    <t t-set="barcode" t-value="mvl.lot_id.name"/>
                                 </t>
                             </t>
                         </t>
                     </div>
                 </t>
-            </t> -->
+            </t>
         </template>
+        <template id="report_scanned_product_barcode">
+            <t t-foreach="docs" t-as="product">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <t t-call="web.html_container">
+                            <t t-call="wcgsh_stock_barcode.report_picking_label3x7"/>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+        
         <template id="report_task_product_barcode">
             <t t-foreach="docs" t-as="task">
                 <t t-call="web.basic_layout">
@@ -65,17 +45,17 @@
         </template>
         
         <template id="report_picking_label3x7">
-            <t t-set="barcode_size" t-value="'width:31mm;height:14mm'"/>
-            <t t-set="table_style" t-value="'width:32mm;height:25mm; border: 1px solid %s;' % ('black')"/>
+            <t t-set="barcode_size" t-value="'width:420px;height:140px'"/>
+            <t t-set="table_style" t-value="'width:460px;height:230px; border: 1px solid %s;' % ('black')"/>
             <td t-att-style="make_invisible and 'visibility:hidden;'" >
                 <div class="o_label_full" t-att-style="table_style">
-                    <div class="o_label_name text-center" style="height:18px">
+                    <div class="o_label_name text-center wcgsh-custom" style="height:50px">
                         <span><t t-out="abbr"/></span>
                     </div>
                     <div class= "text-center o_label_small_barcode">
-                        <t t-if="mvl.lot_id.name">
-                            <div t-out="mvl.lot_id.name" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
-                            <span class="text-center" t-out="mvl.lot_id.name"/>
+                        <t t-if="barcode">
+                            <div t-out="barcode" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
+                            <span class="text-center wcgsh-barcode" t-out="barcode"/>
                         </t>
                     </div>
                 </div>
@@ -83,20 +63,20 @@
         </template>
 
         <template id="report_task_label1x3">
-            <t t-set="barcode_size" t-value="'width:100mm;height:25mm'"/>
-            <t t-set="table_style" t-value="'width:101mm;height:76mm; border: 1px solid %s;' % ('black')"/>
+            <t t-set="barcode_size" t-value="'width:911px;height:312px'"/>
+            <t t-set="table_style" t-value="'width:959px;height:727px; border: 1px solid %s;' % ('black')"/>
             <td t-att-style="make_invisible and 'visibility:hidden;'" >
                 <div class="text-center" t-att-style="table_style">
-                    <div class="text-center">
+                    <div class="text-center wcgsh-custom">
                         <strong t-field="task.product_part"/>
                     </div>
-                    <div class="text-center">
+                    <div class="text-center wcgsh-custom">
                         <strong t-field="task.owner"/>
                     </div>
                     <div class= "text-center o_label_small_barcode">
                         <t t-if="task.name">
                             <div t-out="task.name" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
-                            <span class="text-center" t-out="task.name"/>
+                            <span class="text-center wcgsh-custom" t-out="task.name"/>
                         </t>
                     </div>
                 </div>
