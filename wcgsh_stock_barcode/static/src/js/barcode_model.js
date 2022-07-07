@@ -70,7 +70,7 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
                     barcodeData.quantity) {
                     barcodeData.product = previousProduct;
                 }
-                owner = 0
+                var owner = 0
                 if ("owner_id" in currentLine && "id" in currentLine.owner_id) {
                     owner = currentLine.owner_id.id
                 }
