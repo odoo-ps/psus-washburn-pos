@@ -1,6 +1,7 @@
 /** @odoo-module **/
 
 import BarcodeModel from '@stock_barcode/models/barcode_model';
+import { _t } from 'web.core';
 var rpc = require('web.rpc');
 
 BarcodeModel.prototype._processBarcode = async function(barcode) {
