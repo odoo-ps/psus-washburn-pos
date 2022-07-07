@@ -70,10 +70,14 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
                     barcodeData.quantity) {
                     barcodeData.product = previousProduct;
                 }
+                var owner = 0
+                if ("owner_id" in currentLine && "id" in currentLine.owner_id) {
+                    owner = currentLine.owner_id.id
+                }
                 rpc.query({
                         model: 'product.product',
                         method: 'action_scan_print',
-                        args: [[], barcodeData.product.id, barcodeData.barcode, currentLine.owner_id.id],
+                        args: [[], barcodeData.product.id, barcodeData.barcode, owner],
                 }).then(result => {
                     if(result){
                         this.trigger('do-action', {
