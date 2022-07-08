@@ -71,8 +71,10 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
                     barcodeData.product = previousProduct;
                 }
                 var owner = 0
-                if ("owner_id" in currentLine && "id" in currentLine.owner_id) {
-                    owner = currentLine.owner_id.id
+                if ("owner_id" in currentLine && currentLine.owner_id.constructor == Object) {
+                    if ("id" in currentLine.owner_id) {
+                        owner = currentLine.owner_id.id
+                    }
                 }
                 rpc.query({
                         model: 'product.product',
