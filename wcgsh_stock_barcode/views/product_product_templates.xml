@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data>
+        <template id="report_picking_product_barcode">
+            <t t-foreach="docs" t-as="picking">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <t t-call="web.html_container">
+                            <t t-foreach="picking.move_line_nosuggest_ids" t-as="mvl">
+                                <t t-call="wcgsh_stock_barcode.report_picking_label3x7">
+                                    <t t-set="product" t-value="mvl.product_id"/>
+                                    <t t-set="abbr" t-value="mvl.owner_id.abbreviation"/>
+                                    <t t-set="barcode" t-value="mvl.lot_id.name"/>
+                                </t>
+                            </t>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+        <template id="report_scanned_product_barcode">
+            <t t-foreach="docs" t-as="product">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <t t-call="web.html_container">
+                            <t t-call="wcgsh_stock_barcode.report_picking_label3x7"/>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+        
+        <template id="report_task_product_barcode">
+            <t t-foreach="docs" t-as="task">
+                <t t-call="web.basic_layout">
+                    <div class="page">
+                        <t t-call="web.html_container">
+                            <t t-call="wcgsh_stock_barcode.report_task_label1x3">
+                                <t t-set="product" t-value="task.product_id"/>
+                            </t>
+                        </t>
+                    </div>
+                </t>
+            </t>
+        </template>
+        
+        <template id="report_picking_label3x7">
+            <t t-set="barcode_size" t-value="'width:420px;height:140px'"/>
+            <t t-set="table_style" t-value="'width:460px;height:230px; border: 1px solid %s;' % ('black')"/>
+            <td t-att-style="make_invisible and 'visibility:hidden;'" >
+                <div class="o_label_full" t-att-style="table_style">
+                    <div class="o_label_name text-center wcgsh-custom" style="height:50px">
+                        <span><t t-out="abbr"/></span>
+                    </div>
+                    <div class= "text-center o_label_small_barcode">
+                        <t t-if="barcode">
+                            <div t-out="barcode" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
+                            <span class="text-center wcgsh-barcode" t-out="barcode"/>
+                        </t>
+                    </div>
+                </div>
+            </td>
+        </template>
+
+        <template id="report_task_label1x3">
+            <t t-set="barcode_size" t-value="'width:911px;height:312px'"/>
+            <t t-set="table_style" t-value="'width:959px;height:727px; border: 1px solid %s;' % ('black')"/>
+            <td t-att-style="make_invisible and 'visibility:hidden;'" >
+                <div class="text-center" t-att-style="table_style">
+                    <div class="text-center wcgsh-custom">
+                        <strong t-field="task.product_part"/>
+                    </div>
+                    <div class="text-center wcgsh-custom">
+                        <strong t-field="task.owner"/>
+                    </div>
+                    <div class= "text-center o_label_small_barcode">
+                        <t t-if="task.name">
+                            <div t-out="task.name" style="padding:0" t-options="{'widget': 'barcode', 'symbology': 'auto', 'img_style': barcode_size}"/>
+                            <span class="text-center wcgsh-custom" t-out="task.name"/>
+                        </t>
+                    </div>
+                </div>
+            </td>
+        </template>
+
+        <template id="product.report_productlabel">
+            <t t-call="web.html_container">
+                <t t-if="columns and rows">
+                    <t t-if="columns == 1 and rows == 3">
+                        <t t-set="padding_page" t-value="'padding: 14mm 3mm'"/>
+                        <t t-set="report_to_call" t-value="'wcgsh_stock_barcode.report_simple_label1x3'"/>
+                    </t>
+                    <t t-if="columns == 2 and rows == 7">
+                        <t t-set="padding_page" t-value="'padding: 14mm 3mm'"/>
+                        <t t-set="report_to_call" t-value="'product.report_simple_label2x7'"/>
+                    </t>
+                    <t t-if="columns == 3 and rows == 7">
+                        <t t-set="padding_page" t-value="'padding: 14mm 3mm'"/>
+                        <t t-set="report_to_call" t-value="'wcgsh_stock_barcode.report_simple_label3x7'"/>
+                    </t>
+                    <t t-if="columns == 4 and rows == 7">
+                        <t t-set="padding_page" t-value="'padding: 14mm 3mm'"/>
+                        <t t-set="report_to_call" t-value="'product.report_simple_label4x7'"/>
+                    </t>
+                    <t t-if="columns == 4 and rows == 12">
+                        <t t-set="padding_page" t-value="'padding: 20mm 8mm'"/>
+                        <t t-set="report_to_call" t-value="'product.report_simple_label4x12'"/>
+                    </t>
+                    <t t-foreach="range(page_numbers)" t-as="page">
+                        <div class="o_label_sheet" t-att-style="padding_page">
+                            <table class="my-0 table table-sm table-borderless">
+                                <t t-foreach="range(rows)" t-as="row">
+                                    <tr>
+                                        <t t-foreach="range(columns)" t-as="column">
+                                            <t t-if="not current_quantity and quantity">
+                                                <t t-set="current_data" t-value="quantity.popitem()"/>
+                                                <t t-set="product" t-value="current_data[0]"/>
+                                                <t t-set="barcode_and_qty" t-value="current_data[1].pop()"/>
+                                                <t t-set="barcode" t-value="barcode_and_qty[0]"/>
+                                                <t t-set="current_quantity" t-value="barcode_and_qty[1]"/>
+                                            </t>
+                                            <t t-if="current_quantity">
+                                                <t t-set="make_invisible" t-value="False"/>
+                                                <t t-set="current_quantity" t-value="current_quantity - 1"/>
+                                            </t>
+                                            <t t-elif="current_data and current_data[1]">
+                                                <t t-set="barcode_and_qty" t-value="current_data[1].pop()"/>
+                                                <t t-set="barcode" t-value="barcode_and_qty[0]"/>
+                                                <t t-set="current_quantity" t-value="barcode_and_qty[1] - 1"/>
+                                            </t>
+                                            <t t-else="">
+                                                <t t-set="make_invisible" t-value="True"/>
+                                            </t>
+                                            <t t-set="table_style" t-value="'border: 1px solid %s;' % (product.env.user.company_id.primary_color or 'black')"/>
+                                            <t t-call="{{report_to_call}}"/>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </table>
+                        </div>
+                    </t>
+                </t>
+            </t>
+        </template>
+    </data>
+</odoo>

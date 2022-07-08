@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="report_scanned_barcodes" model="ir.actions.report">
+            <field name="name">WCGSH Scanner Barcodes</field>
+            <field name="model">product.product</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">wcgsh_stock_barcode.report_scanned_product_barcode</field>
+            <field name="report_file">wcgsh_stock_barcode.report_scanned_product_barcode</field>
+            <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+            <field name="print_report_name">'WCGSH Scanned Barcodes - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="product.model_product_product"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+        <record id="report_receipt_barcodes" model="ir.actions.report">
+            <field name="name">WCGSH Receipt Barcodes</field>
+            <field name="model">stock.picking</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">wcgsh_stock_barcode.report_picking_product_barcode</field>
+            <field name="report_file">wcgsh_stock_barcode.report_picking_product_barcode</field>
+            <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+            <field name="print_report_name">'WCGSH Reciept Barcodes - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="stock.model_stock_picking"/>
+            <field name="binding_type">report</field>
+        </record>
+        
+        <record id="report_project_task_barcodes" model="ir.actions.report">
+            <field name="name">WCGSH Task Barcode</field>
+            <field name="model">project.task</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">wcgsh_stock_barcode.report_task_product_barcode</field>
+            <field name="report_file">wcgsh_stock_barcode.report_task_product_barcode</field>
+            <field name="paperformat_id" ref="product.paperformat_label_sheet"/>
+            <field name="print_report_name">'WCGSH Task Barcode - %s' % (object.name)</field>
+            <field name="binding_model_id" ref="project.model_project_task"/>
+            <field name="binding_type">report</field>
+        </record>
+    </data>
+</odoo>
