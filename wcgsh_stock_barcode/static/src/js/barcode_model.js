@@ -216,23 +216,25 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
 
     // And finally, if the scanned barcode modified a line, selects this line.
     if (currentLine) {
-        var owner = 0
-        if ("owner_id" in currentLine && currentLine.owner_id.constructor == Object) {
-            if ("id" in currentLine.owner_id) {
-                owner = currentLine.owner_id.id
+        if ("lot_id" in currentLine) {
+            var owner = 0
+            if ("owner_id" in currentLine && currentLine.owner_id.constructor == Object) {
+                if ("id" in currentLine.owner_id) {
+                    owner = currentLine.owner_id.id
+                }
             }
+            rpc.query({
+                    model: 'product.product',
+                    method: 'action_scan_print',
+                    args: [[], barcodeData.product.id, barcodeData.barcode, owner],
+            }).then(result => {
+                if(result){
+                    this.trigger('do-action', {
+                        action: result,
+                    });
+                }
+            });
         }
-        rpc.query({
-                model: 'product.product',
-                method: 'action_scan_print',
-                args: [[], barcodeData.product.id, barcodeData.barcode, owner],
-        }).then(result => {
-            if(result){
-                this.trigger('do-action', {
-                    action: result,
-                });
-            }
-        });
         this.selectLine(currentLine);
     }
     this.trigger('update');

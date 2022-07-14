@@ -21,7 +21,6 @@
     'assets': {
         'web.assets_backend': [
             'wcgsh_stock_barcode/static/src/js/kanban_controller.js',
-            'wcgsh_stock_barcode/static/src/js/barcode_picking_model.js',
             'wcgsh_stock_barcode/static/src/js/barcode_model.js',
         ],
         'web.report_assets_common': [
