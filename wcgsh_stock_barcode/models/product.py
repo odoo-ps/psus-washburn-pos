@@ -8,7 +8,11 @@ class ProductLabelLayout(models.Model):
 
     display_name = fields.Char('Display Name', compute="_compute_display_name", store=True)
     
-    def action_scan_print(self, product_id, barcode=False, owner_id=False):
+    def action_scan_print(self, product_id, barcode=False, owner_id=False, pickingId=False):
         data = {'product_id': int(product_id), 'barcode': barcode, 'owner_id': int(owner_id)}
-        result = self.env.ref('wcgsh_stock_barcode.report_scanned_barcodes').report_action(None, data=data)
+        result = False
+        if pickingId:
+            picking = self.env['stock.picking'].browse([pickingId])
+            if len(picking.ids) > 0 and picking.picking_type_id.code == 'incoming':
+                result = self.env.ref('wcgsh_stock_barcode.report_scanned_barcodes').report_action(None, data=data)
         return result
