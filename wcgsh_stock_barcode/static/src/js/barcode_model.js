@@ -1,5 +1,5 @@
 /** @odoo-module **/
-/* CUSTOM CODE ON LINE 220 to 239 - Modified to make rpc call to print action*/
+/* CUSTOM CODE ON LINE 218 to 239 - Modified to make rpc call to print action*/
 
 import BarcodeModel from '@stock_barcode/models/barcode_model';
 import { _t } from 'web.core';
@@ -214,21 +214,19 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
         }
         currentLine = await this._createNewLine({fieldsParams});
     }
-
-    // And finally, if the scanned barcode modified a line, selects this line.
-    if (currentLine) {
-        if ("lot_id" in currentLine && "picking_id" in currentLine) {
-            var owner = 0
-            var picking_id = currentLine.picking_id
-            if ("owner_id" in currentLine && currentLine.owner_id.constructor == Object) {
-                if ("id" in currentLine.owner_id) {
-                    owner = currentLine.owner_id.id
-                }
-            }
+    
+    /*************************************************START OF CUSTOM CODE*************************************************/
+    if (barcodeData && currentLine) {
+        var owner = 0
+        var picking_id = currentLine.picking_id
+        if ("owner" in barcodeData && "id" in barcodeData.owner) {
+            owner = barcodeData.owner.id
+        }
+        if (("lot" in barcodeData && "name" in barcodeData.lot ) || "lotName" in barcodeData) {
             rpc.query({
                     model: 'product.product',
                     method: 'action_scan_print',
-                    args: [[], barcodeData.product.id, barcodeData.barcode, owner, picking_id],
+                    args: [[], barcodeData.product.id, barcodeData.lotName || barcodeData.lot.name, owner, picking_id],
             }).then(result => {
                 if(result){
                     this.trigger('do-action', {
@@ -237,6 +235,11 @@ BarcodeModel.prototype._processBarcode = async function(barcode) {
                 }
             });
         }
+    }
+    /**************************************************END OF CUSTOM CODE**************************************************/
+
+    // And finally, if the scanned barcode modified a line, selects this line.
+    if (currentLine) {
         this.selectLine(currentLine);
     }
     this.trigger('update');
